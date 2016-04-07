@@ -66,7 +66,7 @@ var NetONEXTest = NetONEX.extend({
 		var activex = this.getHashX();
 		var s = "ABCD中文";
 		var b = this.js2vb_array([1, 2, 3]);
-		var f = 'C:\\ZYY\\中文\\a.jpg';
+		var f = 'C:\\ZYY\\a.txt';
 		var r;
 
 		r = activex.SHA1String(s);
@@ -229,21 +229,39 @@ var NetONEXTest = NetONEX.extend({
 			throw new Error(crtx.ErrorString);			
 		}
 		this.log("PKCS1VerifyFile ok");
-
-		d = hshx.SHA1String(s);
-		if (!d) {
-			throw new Error(crtx.ErrorString);			
-		}
-		e = crtx.PKCS1Digest(b64x.EncodeHexString(d), "sha1");
-		if (!e) {
-			throw new Error(crtx.ErrorString);
-		}
-		this.log($.sprintf("PKCS1Digest: %s", e));
-		if (crtx.PKCS1VerifyDigest(e, b64x.EncodeHexString(d))) {
-			throw new Error(crtx.ErrorString);			
-		}
-		this.log("PKCS1VerifyDigest ok");
-
+        
+        if (crtx.Algorithm == 'SM2') {
+            //crtx.DEBUG = 1;
+            d = "00112233445566778899AABBCCDDEEFF00112233445566778899AABBCCDDEEFF";
+            if (!d) {
+                throw new Error(crtx.ErrorString);			
+            }
+            e = crtx.PKCS1Digest(b64x.EncodeHexString(d), "ecdsa-sm2-with-sm3");
+            if (!e) {
+                throw new Error(crtx.ErrorString);
+            }
+            this.log($.sprintf("PKCS1Digest: %s", e));
+            if (crtx.PKCS1VerifyDigest(e, b64x.EncodeHexString(d))) {
+                throw new Error(crtx.ErrorString);			
+            }
+            this.log("PKCS1VerifyDigest ok");
+        }
+        else {
+            d = hshx.SHA1String(s);
+            if (!d) {
+                throw new Error(crtx.ErrorString);			
+            }
+            e = crtx.PKCS1Digest(b64x.EncodeHexString(d), "sha1");
+            if (!e) {
+                throw new Error(crtx.ErrorString);
+            }
+            this.log($.sprintf("PKCS1Digest: %s", e));
+            if (crtx.PKCS1VerifyDigest(e, b64x.EncodeHexString(d))) {
+                throw new Error(crtx.ErrorString);			
+            }
+            this.log("PKCS1VerifyDigest ok");
+        }
+        
 		for (n = 0; n < 2; n ++) {
 			e = crtx.PKCS7String(s, n);
 			if (!e) {
@@ -302,6 +320,13 @@ var NetONEXTest = NetONEX.extend({
 			d = crtx.GetExtensionString(oid[i], 1);
 			this.log($.sprintf("GetExtensionString: %s (%s)", d, oid[i]));
 		}
+        
+
+        var xml = '<root><a>abc</a></root>';
+        d = crtx.XMLSignEnveloping(xml);
+        this.log($.sprintf("XMLSignEnveloping: <pre>(%s)</pre>", $('<div/>').text(d).html()));
+        d = crtx.XMLSign(xml);
+        this.log($.sprintf("XMLSign: <pre>(%s)</pre>", $('<div/>').text(d).html()));
 	},
 
 	run: function() {
@@ -313,6 +338,7 @@ var NetONEXTest = NetONEX.extend({
 			this.testHashX();
 			//this.testCertificateCollectionX();
 			this.testCertificateX();
+			//this.testCertificateX();
 		}
 		catch (e) {
 			this.log(e);
