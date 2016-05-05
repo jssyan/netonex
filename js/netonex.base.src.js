@@ -9,7 +9,7 @@ var NetONEX = SXActiveX.extend({
 	MAINX_ID: "netonex", 
 	NPAPI_MIME: "application/x-netone",
 	NETONEX_ATTRS: {},
-	SCRIPT_VERSION: "1.0.3",
+	SCRIPT_VERSION: "1.0.4",
 
 	getMainXNpapi: function(obj) {
 		var m = obj.NP_IMainX();
@@ -44,7 +44,11 @@ var NetONEX = SXActiveX.extend({
 	getSKFEnrollX: function() {
 		return this.getInstanceX('SKFEnrollX');
 	},
-
+    
+    getSKFTokenCollectionX: function() {
+		return this.getInstanceX('SKFTokenCollectionX');        
+    },
+    
 	getInstanceX: function(id) {
 		var m = this.getMainX();
 		var r = this.CONTROL_MAP[id];
@@ -65,6 +69,9 @@ var NetONEX = SXActiveX.extend({
 		}
 		else if (id == 'SKFEnrollX') {
 			r = m.CreateSKFEnrollXInstance();
+		}
+		else if (id == 'SKFTokenCollectionX') {
+			r = m.CreateSKFTokenCollectionXInstance();
 		}
 		if (!('Quiet' in r)) {
 			throw new Error($.sprintf('%s is not running.', id));

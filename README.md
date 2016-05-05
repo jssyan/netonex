@@ -6,6 +6,10 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.3.6.0-1
+* 新增对象ISKFTokenCollectionX，可用于加载搜索SKF设备
+* 修复了v1.3.5.0无法在windows xp下注册运行的bug
+
 ##### v1.3.5.0-1
 * ICertificateX新增XMLSignEnveloping和XMLSign方法，可用于XML签名
 * NetONE/npNetONE控件的体积增加了将近1倍，原因在于XML签名带来的新增代码

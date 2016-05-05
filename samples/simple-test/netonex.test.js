@@ -145,6 +145,18 @@ var NetONEXTest = NetONEX.extend({
 		}
 	},
 
+	printSKFTokenX: function(colx) {
+		var props = [
+  "Name",
+  "CryptoInterface",
+  "SerialNumber",
+  "HWVersion",
+  "Manufacturer",
+  "FirmwareVersion",
+  "ProviderModuleName"];
+		this.printProperties(colx, props);
+	},
+
 	testCertificateCollectionX: function() {
 		var activex = this.getCertificateCollectionX();
 		var cis = [1, 2, 3];
@@ -328,7 +340,22 @@ var NetONEXTest = NetONEX.extend({
         d = crtx.XMLSign(xml);
         this.log($.sprintf("XMLSign: <pre>(%s)</pre>", $('<div/>').text(d).html()));
 	},
-
+    
+    testSKFTokenCollectionX: function() {
+		var activex = this.getSKFTokenCollectionX();
+        var n = activex.Load();
+        this.log($.sprintf("SKFTokenCollectionX: loaded %d. size=%d", n, activex.Size));
+        for (n = 0; n < activex.Size; n ++) {
+            var x = activex.GetAt(n);
+            //this.log($.sprintf("SKFToken: name=[%s]", x.Name));
+            this.printSKFTokenX(x);
+        }
+        var x = activex.SelectTokenDialog();
+        if (x) {
+            this.printSKFTokenX(x);
+        }
+    },
+    
 	run: function() {
 		//alert('start');
 		try {
@@ -338,7 +365,7 @@ var NetONEXTest = NetONEX.extend({
 			this.testHashX();
 			//this.testCertificateCollectionX();
 			this.testCertificateX();
-			//this.testCertificateX();
+			this.testSKFTokenCollectionX();
 		}
 		catch (e) {
 			this.log(e);
