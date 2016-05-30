@@ -6,6 +6,9 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.3.6.2-1
+* 代码签名使用sha256证书，Windows XP用户需要升级到sp3以上
+
 ##### v1.3.6.0-1
 * 新增对象ISKFTokenCollectionX，可用于加载搜索SKF设备
 * 修复了v1.3.5.0无法在windows xp下注册运行的bug
