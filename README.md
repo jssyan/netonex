@@ -6,6 +6,12 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.3.8.0-1
+* 修复CSP模式下更新双证书时加密证书被更新成签名证书的问题。
+* 修复CertificateX.EnvOpen在用户取消私钥操作情况下(例如在输入PIN的对话框选择取消），依然有数据返回的问题。
+* 基础库升级。更好的SKF驱动兼容性
+* ISKFEnrollX, ICSPEnrollX新增GenerateCSR，KeyExists方法，以及NewCSR属性
+
 ##### v1.3.6.2-1
 * 代码签名使用sha256证书，Windows XP用户需要升级到sp3以上
 
