@@ -355,6 +355,28 @@ var NetONEXTest = NetONEX.extend({
             this.printSKFTokenX(x);
         }
     },
+
+	testUserPIN: function() {
+		var colx = this.getCertificateCollectionX();
+		colx.CF_Issuer_Contains = '';
+		colx.CF_Subject_Contains = '';
+		colx.Load();
+		//var t = colx.Size;
+
+		var crtx = colx.SelectCertificateDialog();
+		if (!crtx) {
+			throw new Error(colx.ErrorString);
+		}
+		var r = crtx.VerifyPIN("111111");
+		this.log($.sprintf("verify ret=%d", r));
+		r = crtx.VerifyPIN("111112");
+		this.log($.sprintf("verify ret=%d", r));
+		r = crtx.VerifyPIN("111111");
+		this.log($.sprintf("verify ret=%d", r));
+		crtx.UserPIN = "111111";
+		r = crtx.VerifyPIN("");
+		this.log($.sprintf("verify ret=%d userpin=%s", r, crtx.UserPIN));
+	},
     
 	run: function() {
 		//alert('start');
@@ -363,9 +385,10 @@ var NetONEXTest = NetONEX.extend({
 			this.log($.sprintf("VERSION: %08x", m.Version));
 			this.testBase64X();
 			this.testHashX();
-			//this.testCertificateCollectionX();
+			this.testCertificateCollectionX();
 			this.testCertificateX();
 			this.testSKFTokenCollectionX();
+			//this.testUserPIN();
 		}
 		catch (e) {
 			this.log(e);
