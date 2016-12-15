@@ -178,17 +178,20 @@ var NetONEXTest = NetONEX.extend({
 		activex.Load();
 		this.printCertificateCollectionX(activex);
 
+		/*
 		var crtx = activex.CreateCertificateFile('');
 		if (!crtx) {
 			throw new Error(activex.ErrorString);
 		}
 		this.printCertificateX(crtx, 1);
+		*/
 	},
 
 	testCertificateX: function() {
 		var b64x = this.getBase64X();
 		var hshx = this.getHashX();
 		var colx = this.getCertificateCollectionX();
+		colx.CryptoInterface = 3;
 		colx.CF_Issuer_Contains = '';
 		colx.CF_Subject_Contains = '';
 		colx.Load();
@@ -385,7 +388,7 @@ var NetONEXTest = NetONEX.extend({
 			this.log($.sprintf("VERSION: %08x", m.Version));
 			this.testBase64X();
 			this.testHashX();
-			this.testCertificateCollectionX();
+			//this.testCertificateCollectionX();
 			this.testCertificateX();
 			this.testSKFTokenCollectionX();
 			//this.testUserPIN();
