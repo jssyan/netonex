@@ -381,17 +381,41 @@ var NetONEXTest = NetONEX.extend({
 		this.log($.sprintf("verify ret=%d userpin=%s", r, crtx.UserPIN));
 	},
     
+	testPinCache: function() {
+		var colx = this.getCertificateCollectionX();
+		colx.Load();
+		var crtx = colx.SelectCertificateDialog();
+		if (!crtx) {
+			throw new Error(colx.ErrorString);
+		}
+		var s = "abcd";
+		var n;
+		var b64x = this.getBase64X();
+		for (n = 0; n < 3; n ++) {
+			this.log('test ' + n);
+			var x = crtx.PKCS1String(s);
+			this.log('test ' + n + ' pkcs1: ' + x);
+			x = crtx.PKCS7String(s, 0);
+			this.log('test ' + n + ' pkcs7: ' + x);
+			x = crtx.EnvSeal(b64x.EncodeString(s));
+			this.log($.sprintf("EnvSeal: %s", x));
+			x = crtx.EnvOpen(x);
+			this.log($.sprintf("EnvOpen: %s", x));
+		}
+	},
+
 	run: function() {
 		//alert('start');
 		try {
 			var m = this.getMainX();
 			this.log($.sprintf("VERSION: %08x", m.Version));
-			this.testBase64X();
-			this.testHashX();
+			//this.testBase64X();
+			//this.testHashX();
 			//this.testCertificateCollectionX();
-			this.testCertificateX();
-			this.testSKFTokenCollectionX();
+			//this.testCertificateX();
+			//this.testSKFTokenCollectionX();
 			//this.testUserPIN();
+			this.testPinCache();
 		}
 		catch (e) {
 			this.log(e);
