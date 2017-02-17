@@ -282,7 +282,7 @@ var NetONEXTest = NetONEX.extend({
 			if (!e) {
 				throw new Error(crtx.ErrorString);
 			}
-			this.log($.sprintf("PKCS7String (%d): %s", n, e));
+			this.log($.sprintf("PKCS7String (%d [%s]): %s", n, s, e));
 		}
 
 		for (n = 0; n < 2; n ++) {
@@ -412,10 +412,10 @@ var NetONEXTest = NetONEX.extend({
 			//this.testBase64X();
 			//this.testHashX();
 			//this.testCertificateCollectionX();
-			//this.testCertificateX();
+			this.testCertificateX();
 			//this.testSKFTokenCollectionX();
 			//this.testUserPIN();
-			this.testPinCache();
+			//this.testPinCache();
 		}
 		catch (e) {
 			this.log(e);

@@ -6,6 +6,22 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.4.0.0
+* 基础库升级，修复了存在了很长时间的SM2证书PKCS7 Attach/Detach参数效果颠倒的问题。期望Attached，结果是Detached；期望Deteched，结果是Attached。（RSA证书没有这个问题）
+
+##### v1.3.9.0
+* 基础库升级，修复了一个sm2数字信封解包的bug
+* CertificateCollectionX::CreateCertificateFile参数有变化，支持同时加载私钥文件。
+
+##### v1.3.8.3
+* 修复SKF PIN输入框输入PIN长度不能超过31个字符的bug
+
+##### v1.3.8.2
+* CertificateX：新增VerifyPIN()
+
+##### v1.3.8.1
+* CertificateX.DefaultCipher，不论SKF/CSP接口，缺省均为sm4-cbc
+
 ##### v1.3.8.0-1
 * 修复CSP模式下更新双证书时加密证书被更新成签名证书的问题。
 * 修复CertificateX.EnvOpen在用户取消私钥操作情况下(例如在输入PIN的对话框选择取消），依然有数据返回的问题。
