@@ -6,6 +6,9 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.4.1.0
+* 新增IPKCS7SigX对象, 支持PKCS7签名的解析，验证
+
 ##### v1.4.0.0
 * 基础库升级，修复了存在了很长时间的SM2证书PKCS7 Attach/Detach参数效果颠倒的问题。期望Attached，结果是Detached；期望Deteched，结果是Attached。（RSA证书没有这个问题）
 

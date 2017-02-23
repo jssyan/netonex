@@ -404,6 +404,44 @@ var NetONEXTest = NetONEX.extend({
 		}
 	},
 
+	testPKCS7SigX: function() {
+		var colx = this.getCertificateCollectionX();
+		colx.Load();
+		var crtx = colx.SelectCertificateDialog();
+		if (!crtx) {
+			throw new Error(colx.ErrorString);
+		}
+		var s = "ABCD中文";
+		var n, i;
+		for (n = 0; n < 2; n ++) {
+			var e = crtx.PKCS7String(s, n);
+			if (!e) {
+				throw new Error(crtx.ErrorString);
+			}
+			this.log($.sprintf("PKCS7String (%d [%s]): %s", n, s, e));
+
+			var mx = this.getMainX();
+			var px = mx.CreatePKCS7SigXInstance();
+			px.DEBUG = 1;
+			if (px.Load(e)) {
+				this.log($.sprintf("detached = %s, content = (%s)", px.IsDetached ? "yes" : "no", px.ContentAsString));
+				if (px.IsDetached) {  // Set content before verify if px is detached
+					px.ContentAsString = s;
+					// check for base64 set/get
+					// px.ContentAsBase64 = px.ContentAsBase64; 
+				}
+				this.log($.sprintf("%d (%s) (%s) （%s)", px.Verify(), px.ContentAsString, px.ContentAsBase64, px.ToBASE64()));
+				this.log($.sprintf("signers (%d)", px.SignerCount));
+				for (i = 0; i < px.SignerCount; i ++) {
+					this.log("==========================");
+					var cx = px.GetSignerAt(i);
+					this.printCertificateX(cx);
+				}
+			}
+			this.log("+++++++++++++++++++++++++");
+		}
+	},
+
 	run: function() {
 		//alert('start');
 		try {
@@ -412,10 +450,11 @@ var NetONEXTest = NetONEX.extend({
 			//this.testBase64X();
 			//this.testHashX();
 			//this.testCertificateCollectionX();
-			this.testCertificateX();
+			//this.testCertificateX();
 			//this.testSKFTokenCollectionX();
 			//this.testUserPIN();
 			//this.testPinCache();
+			this.testPKCS7SigX();
 		}
 		catch (e) {
 			this.log(e);
