@@ -65,7 +65,7 @@ var SXActiveX = objectclass.extend({
 	},
 
 	vb2js_array: function(v) {
-		if (typeof VBArray !== 'undefined') {
+		if (typeof VBArray !== 'undefined' && typeof v == 'unknown') {
 			var j = (new VBArray(v)).toArray();
 			return j;
 		}

@@ -5,6 +5,10 @@
 
 var NetONEXTest = NetONEX.extend({
 
+	getMonikerFilePath: function() {
+		return 'C:\\ZYY\\a.txt';
+	},
+
 	testBase64X: function() {
 		var activex = this.getBase64X();
 		var s = "中文";
@@ -66,7 +70,7 @@ var NetONEXTest = NetONEX.extend({
 		var activex = this.getHashX();
 		var s = "ABCD中文";
 		var b = this.js2vb_array([1, 2, 3]);
-		var f = 'C:\\ZYY\\a.txt';
+		var f = this.getMonikerFilePath();
 		var r;
 
 		r = activex.SHA1String(s);
@@ -92,6 +96,34 @@ var NetONEXTest = NetONEX.extend({
 			throw new Error(activex.ErrorString);
 		}
 		this.log($.sprintf("SHA1Bytes: %s", this.vardump(r, 0)));
+		
+		var algos = [ "sha1", "sha256", "sm3"];
+		for (var i in algos) {
+			activex.Name = algos[i];
+			r = activex.HashString(s);
+			if (!r) {
+				throw new Error(activex.ErrorString);
+			}
+			this.log($.sprintf("HashString(%s): %s", activex.Name, r));
+			r = activex.HashString(b);
+			if (!r) {
+				throw new Error(activex.ErrorString);
+			}
+			this.log($.sprintf("HashString(%s): %s", activex.Name, r));
+
+			r = activex.HashFile(f);
+			if (!r) {
+				throw new Error(activex.ErrorString);
+			}
+			this.log($.sprintf("HashFile(%s): %s", activex.Name, r));
+
+			r = activex.HashBytes(b);
+			r = this.vb2js_array(r);
+			if (!r) {
+				throw new Error(activex.ErrorString);
+			}
+			this.log($.sprintf("HashBytess(%s): %s", activex.Name, this.vardump(r, 0)));
+		}
 	},
 
 	printProperties: function(obj, props) {
@@ -205,7 +237,7 @@ var NetONEXTest = NetONEX.extend({
 
 		var s = "ABCD中文";
 		var b = this.js2vb_array([1, 2, 3]);
-		var f = 'C:\\ZYY\\a.txt';
+		var f = this.getMonikerFilePath();
 		var e, d;
 
 		e = crtx.PKCS1Bytes(b);
@@ -442,19 +474,154 @@ var NetONEXTest = NetONEX.extend({
 		}
 	},
 
+	printCipherX: function(x) {
+		var props = [
+  "Name",
+  "KeySize",
+  "BlockSize",
+  "IVSize",
+  "CipherMode"];
+		this.printProperties(x, props);
+	},
+
+	testCipherX: function(x) {
+		var s = "ABCDE中文";
+		var jsarray;
+		x.Key = "00000000000000000000000000000000"; //x.GenerateRandom(x.KeySize);
+		if (x.IVSize > 0) {
+			x.IV = x.GenerateRandom(x.IVSize);;
+		}
+		var e = x.EncryptBytes(s);
+		jsarray = this.vb2js_array(e);
+		if (!jsarray || !jsarray.length) {
+			throw new Error(x.ErrorString);
+		}
+		this.log($.sprintf("EncryptBytes (%d): %s", jsarray.length, this.vardump(jsarray, 0)));
+		this.log($.sprintf("Key: %s", this.vardump(this.vb2js_array(x.Key), 0)));
+		this.log($.sprintf("IV: %s", this.vardump(this.vb2js_array(x.IV), 0)));
+		
+		var p = x.DecryptBytes(e);
+		jsarray = this.vb2js_array(p);
+		if (!jsarray || !jsarray.length) {
+			throw new Error(x.ErrorString);
+		}
+		this.log($.sprintf("DecryptBytes (%d): %s", jsarray.length, this.vardump(jsarray, 0)));
+
+		var f = this.getMonikerFilePath();
+		x.Key = x.GenerateRandom(x.KeySize);
+		if (x.IVSize > 0) {
+			x.IV = "00000000000000000000000000000000";
+		}
+		if (x.EncryptFile(f, f + ".encrypted")) {
+			throw new Error(x.ErrorString);			
+		}
+		this.log($.sprintf("EncryptFile: %s -> %s", f, f + ".encrypted"));
+		if (x.DecryptFile(f + ".encrypted", f + ".decrypted")) {
+			throw new Error(x.ErrorString);			
+		}
+		this.log($.sprintf("DecryptFile: %s -> %s", f + ".encrypted", f + ".decrypted"));
+		this.log("++++++++++++++++++++++++++");
+	},
+
+	testCipherXs: function() {
+		var algos = ["sm4-ecb", "sm4-cbc", "aes192", "aes256"];
+		var mx = this.getMainX();
+		for (var i in algos) {
+			var x = mx.CreateCipherXInstance();
+			x.DEBUG = 1;
+			x.Name = algos[i];
+			this.printCipherX(x);
+			this.log("==========================");
+			this.testCipherX(x);
+		}
+	},
+
+	fileXchange: function() {
+		var mx = this.getMainX();
+		var x = mx.CreateCipherXInstance();
+		x.DEBUG = 1;
+		
+		var f = this.getMonikerFilePath();
+		//生成随机密钥
+		x.Key = x.GenerateRandom(x.KeySize);
+		if (x.IVSize > 0) {
+			//设置缺省IV
+			x.IV = "00000000000000000000000000000000";
+		}
+		//加密文件
+		if (x.EncryptFile(f, f + ".encrypted")) {
+			throw new Error(x.ErrorString);			
+		}
+		this.log($.sprintf("EncryptFile: %s -> %s", f, f + ".encrypted"));
+
+		//挑选接收方证书
+		var colx = mx.CreateCertificateCollectionXInstance();
+		colx.CF_KeyUsage = 0; // list all certificates
+		colx.Load();
+		var crtx = colx.SelectCertificateDialog();
+		if (!crtx) {
+			throw new Error(colx.ErrorString);
+		}
+		var b64x = mx.CreateBase64XInstance();
+		//使用接收方公钥证书加密对称密钥
+		var e = crtx.EnvSeal(b64x.EncodeBytes(x.Key));
+		if (!e) {
+			throw new Error(crtx.ErrorString);
+		}
+		this.log($.sprintf("Key Sealed: %s", e));
+
+		//以下是解密流程
+		//解密方挑选自己的证书
+		colx = mx.CreateCertificateCollectionXInstance();
+		colx.Load();
+		crtx = colx.SelectCertificateDialog();
+		if (!crtx) {
+			throw new Error(colx.ErrorString);
+		}
+		//打开数字信封，获取加密对称密钥
+		var k = crtx.EnvOpen(e);
+		if (!k) {
+			throw new Error(crtx.ErrorString);
+		}
+		this.log($.sprintf("Key Opened: %s", k));
+
+		var y = mx.CreateCipherXInstance();
+		//设置密钥
+		y.Key = b64x.DecodeBytes(k);
+		if (y.IVSize > 0) {
+			//设置IV
+			y.IV = "00000000000000000000000000000000";
+		}
+		//解密文件
+		if (y.DecryptFile(f + ".encrypted", f + ".decrypted")) {
+			throw new Error(y.ErrorString);			
+		}
+		this.log($.sprintf("DecryptFile: %s -> %s", f + ".encrypted", f + ".decrypted"));
+	},
+
 	run: function() {
 		//alert('start');
 		try {
 			var m = this.getMainX();
 			this.log($.sprintf("VERSION: %08x", m.Version));
 			//this.testBase64X();
-			//this.testHashX();
+			this.testHashX();
+			this.log("+++++++++++||||||||||||||||||||||+++++++++++");
 			//this.testCertificateCollectionX();
+			//this.log("+++++++++++||||||||||||||||||||||+++++++++++");
 			//this.testCertificateX();
+			//this.log("+++++++++++||||||||||||||||||||||+++++++++++");
 			//this.testSKFTokenCollectionX();
+			//this.log("+++++++++++||||||||||||||||||||||+++++++++++");
 			//this.testUserPIN();
+			//this.log("+++++++++++||||||||||||||||||||||+++++++++++");
 			//this.testPinCache();
-			this.testPKCS7SigX();
+			//this.log("+++++++++++||||||||||||||||||||||+++++++++++");
+			//this.testPKCS7SigX();
+			//this.log("+++++++++++||||||||||||||||||||||+++++++++++");
+			this.testCipherXs();
+			this.log("+++++++++++||||||||||||||||||||||+++++++++++");
+			this.fileXchange();
 		}
 		catch (e) {
 			this.log(e);
