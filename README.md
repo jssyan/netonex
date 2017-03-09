@@ -6,6 +6,9 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.4.3.0
+* 修复了不能new PKCS7SigX而只能通过MainX.CreatePKCS7SigXInstance()构造PKCS7SigX实例的bug;
+
 ##### v1.4.2.0
 * HashX, 新增SHA-2（SHA256），SM3算法;
 * 新增CipherX对象, 支持多种对称加密算法;
