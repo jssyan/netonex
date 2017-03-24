@@ -6,6 +6,10 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.4.4.0
+* 修复了不能new TSAResponseX而只能通过MainX.CreateTSAResponseXInstance()构造TSAResponseX实例的bug; 
+* SSLClientX, 新增PeerCertificate，CipherInfo属性
+
 ##### v1.4.3.0
 * 修复了不能new PKCS7SigX而只能通过MainX.CreatePKCS7SigXInstance()构造PKCS7SigX实例的bug;
 
