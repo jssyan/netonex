@@ -6,6 +6,11 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.4.5.1
+* TSAClientX.TSACreate, 第一个参数从byref改成byval，跟其它api一致; 
+* TSAClientX.TSACreate, 内部使用SFTHash代替CSPHash，降低使用时的权限要求，例如在IIS后台运行; 
+* DEBUG属性的作用发生变化。当DEBUG设置成1的时候，仅在错误信息中增加调试信息，不主动触发MessageBox。是否触发MessageBox由Quiet属性决定；
+
 ##### v1.4.4.0
 * 修复了不能new TSAResponseX而只能通过MainX.CreateTSAResponseXInstance()构造TSAResponseX实例的bug; 
 * SSLClientX, 新增PeerCertificate，CipherInfo属性
