@@ -599,6 +599,34 @@ var NetONEXTest = NetONEX.extend({
 		this.log($.sprintf("DecryptFile: %s -> %s", f + ".encrypted", f + ".decrypted"));
 	},
 
+	testSKFSealOpen: function() {
+		var mx = this.getMainX();
+		var colx = mx.CreateCertificateCollectionXInstance();
+		colx.CryptoInterface = 0x01; // using skf only
+		colx.CF_KeyUsage = 0x11; // list all cipher certificates
+		colx.Load();
+		var crtx = colx.SelectCertificateDialog();
+		if (!crtx) {
+			throw new Error(colx.ErrorString);
+		}
+
+		var data = "this is a sample string";
+		this.log($.sprintf("Original data: %s", data));
+
+		var b64x = mx.CreateBase64XInstance();
+		var e = crtx.SKFSeal(b64x.EncodeBytes(data));
+		if (!e) {
+			throw new Error(crtx.ErrorString);
+		}
+		this.log($.sprintf("Data Sealed: %s", e));
+
+		var o = crtx.SKFOpen(e);
+		if (!o) {
+			throw new Error(crtx.ErrorString);
+		}
+		this.log($.sprintf("Data Opened: %s", b64x.DecodeString(o)));
+	},
+
 	run: function() {
 		//alert('start');
 		try {
@@ -619,9 +647,11 @@ var NetONEXTest = NetONEX.extend({
 			//this.log("+++++++++++||||||||||||||||||||||+++++++++++");
 			//this.testPKCS7SigX();
 			//this.log("+++++++++++||||||||||||||||||||||+++++++++++");
-			this.testCipherXs();
+			//this.testCipherXs();
+			//this.log("+++++++++++||||||||||||||||||||||+++++++++++");
+			//this.fileXchange();
 			this.log("+++++++++++||||||||||||||||||||||+++++++++++");
-			this.fileXchange();
+			this.testSKFSealOpen();
 		}
 		catch (e) {
 			this.log(e);

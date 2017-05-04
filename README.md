@@ -6,6 +6,12 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.4.6.1
+* 修复PKCS7SigX加载支持算法的bug
+* CertificateX，新增SKFSeal，SKFOpen，SKFSealFile，SKFOpenFile。使用SKF规范Session密钥，具体实现依赖厂商底层驱动. 
+* SKFOpen, SKFOpenFile只支持SKF接口的CertificateX实例（CryptoInterfaceName=="SKF"） 
+* SKFSeal, SKFSealFile支持SKF，SFT，CSP接口的CertificateX实例，但是用来封包的证书公钥必须对应SKF接口的解密私钥。
+
 ##### v1.4.5.1
 * TSAClientX.TSACreate, 第一个参数从byref改成byval，跟其它api一致; 
 * TSAClientX.TSACreate, 内部使用SFTHash代替CSPHash，降低使用时的权限要求，例如在IIS后台运行; 
