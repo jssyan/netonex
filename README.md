@@ -6,6 +6,11 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.4.7.0
+* 修复了一个CertificateCollectionX获取证书后double free的bug 
+* 提高CertificateX.SKFSeal/SKFOpen的兼容性
+* 代码重构，消除内存泄漏
+
 ##### v1.4.6.1
 * 修复PKCS7SigX加载支持算法的bug
 * CertificateX，新增SKFSeal，SKFOpen，SKFSealFile，SKFOpenFile。使用SKF规范Session密钥，具体实现依赖厂商底层驱动. 
