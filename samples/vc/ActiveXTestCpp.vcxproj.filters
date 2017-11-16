@@ -24,16 +24,7 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TestSignerX.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TestNetONEX.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TestUniProxyX.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TestEnrollX.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

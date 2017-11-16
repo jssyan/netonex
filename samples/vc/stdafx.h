@@ -15,6 +15,8 @@
 
 #include <atlbase.h>
 #include <atlstr.h>
+#include <atlconv.h>
+#include <atlsafe.h>
 
 #include <iostream>
 using namespace std;

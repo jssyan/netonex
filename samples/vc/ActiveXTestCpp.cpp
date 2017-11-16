@@ -12,7 +12,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	if(SUCCEEDED(hr))
 	{
 		CTestNetONEX x;
-		x.Base64X();
+		x.Run();
 	}
 	CoUninitialize();
 	cin.get();

@@ -6,6 +6,12 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.4.8.2
+* SKFEnrollX, CSPEnrollX新增GenerateP10方法, 可以根据输入的XML定义生成CSR
+* 新增控件模块FileX，用于简化网页应用开发
+* SSLClientX新增属性TimeoutConnect，TimeoutRead，TimeoutWrite
+* 所有控件的LastError可以设置为0，也只能设置为0. 设置LastError=0将清除原先的ErrorString和LastError。可以用来在执行某些操作前设置LastError=0，在执行完成后检查LastError!=0
+
 ##### v1.4.7.0
 * 修复了一个CertificateCollectionX获取证书后double free的bug 
 * 提高CertificateX.SKFSeal/SKFOpen的兼容性
