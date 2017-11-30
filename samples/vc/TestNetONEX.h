@@ -11,6 +11,7 @@ public:
 
 	void Base64X();
 	void SSLclient(LPCTSTR addr, int port);
+	void SSLclient2(LPCTSTR addr, int port);
 	void XMLsign();
 	void TSA(LPCTSTR addr, int port);
 	void Crt();

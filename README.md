@@ -6,6 +6,11 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.4.8.5
+* SSLClientX新增ConnectSocket方法，使用方法参考vc范例中的SSLclient2()
+* SSLClientX修复了一个Shutdown后存在CLOSE_WAIT的bug
+* SSLClientX修复了一个读(Read)失败情况下处理的bug
+
 ##### v1.4.8.2
 * SKFEnrollX, CSPEnrollX新增GenerateP10方法, 可以根据输入的XML定义生成CSR
 * 新增控件模块FileX，用于简化网页应用开发
