@@ -1,14 +1,13 @@
 #include "stdafx.h"
 #include "TestNetONEX.h"
+#include "TestSSLClientX.h"
 
 using namespace NetONEX;
 
 CTestNetONEX::CTestNetONEX(void)
 {
-	m_pMainX = NULL;
 	HRESULT hr;
-
-	hr = m_pMainX.CreateInstance(__uuidof(NetONEX::MainX));
+	hr = m_pMainX.CoCreateInstance(__uuidof(NetONEX::MainX));
 	if (!SUCCEEDED(hr))
 	{
 		MSGprintf(_T("³õÊ¼»¯ÊµÀýÊ§°Ü£¡"));
@@ -19,9 +18,6 @@ CTestNetONEX::CTestNetONEX(void)
 
 CTestNetONEX::~CTestNetONEX(void)
 {
-	//if (m_pMainX) {
-	//	m_pMainX->Release();
-	//}
 }
 
 void CTestNetONEX::Base64X() {
@@ -164,140 +160,8 @@ void CTestNetONEX::Crt() {
 	}
 }
 
-BYTE* CTestNetONEX::VAR2buffer(variant_t v, ULONG* size) {
-	*size = 0;
-	if (v.vt == VT_EMPTY || v.vt == VT_NULL) {
-		return NULL;
-	}
-	if ((v.vt & VT_ARRAY) && (v.vt & VT_I4)) {
-		*size = v.parray->rgsabound->cElements;
-		BYTE* r = new BYTE[*size + 1];
-		CopyMemory(r, v.parray->pvData, *size);
-		r[*size] = '\0'; // put a '\0' in the end for convenient print as string
-		return r;
-	}
-	return NULL;
-}
-
-void CTestNetONEX::SSLclient(LPCTSTR addr, int port) {
-	NetONEX::ISSLClientXPtr s = m_pMainX->CreateSSLClientXInstance();
-	s->_DEBUG_ = 1;
-	s->Method = _T("auto");
-	//s->Method = _T("cncav1.1");
-	cout << s->Method << endl;
-	s->TimeoutConnect = 15;
-	s->TimeoutWrite = 5;
-	s->TimeoutRead = 15;
-	s->Connect(addr, port);
-	if (s->Connected) {
-		NetONEX::ICertificateXPtr c = s->PeerCertificate;
-		cout << c->Subject << endl;
-		cout << c->Issuer << endl;
-		//_tcprintf(_T("%s\n"), s->CipherInfo);
-		cout << s->CipherInfo << endl;
-		s->WriteString(_T("GET / HTTP/1.0\r\n\r\n"));
-		s->LastError = 0;
-		while (true) {
-			_variant_t r = s->ReadBytes(4096);
-			if (s->LastError) {
-				MSGprintf(_T("SSL read failed. (%s)"), s->ErrorString);
-				break;
-			}
-			ULONG size;
-			BYTE* p = VAR2buffer(r, &size);
-			if (!p) {
-				if (s->LastError == 0) {
-					cout << "all data are read" << endl;
-					break;
-				}
-				else {
-					cout << s->ErrorString << endl;
-					break; //failed
-				}
-			}
-			cout << size << endl;
-			cout << p << endl;  // if p contains string, we can show it here
-			delete p;
-		}
-		s->Shutdown();
-	}
-}
-
-static SOCKET clientSocket(LPCTSTR ip, int port) {
-	WORD sockVersion = MAKEWORD(2,2);  
-    WSADATA data;   
-    if (WSAStartup(sockVersion, &data) != 0) {  
-		MSGprintf(_T("WSAStartup() failed"));
-        return 0;  
-    }  
-  
-    SOCKET sclient = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);  
-    if (sclient == INVALID_SOCKET)  {  
-        MSGprintf(_T("invalid socket"));  
-        return 0;  
-    }  
-	
-	CT2A ipaddr(ip);
-    sockaddr_in serAddr;  
-    serAddr.sin_family = AF_INET;  
-    serAddr.sin_port = htons(port);  
-    serAddr.sin_addr.S_un.S_addr = inet_addr((LPCSTR)ipaddr);   
-    if (connect(sclient, (sockaddr *)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)  
-    {  
-        MSGprintf(_T("connect error"));  
-        closesocket(sclient);  
-        return 0;  
-    } 
-	return sclient;
-}
-
-void CTestNetONEX::SSLclient2(LPCTSTR addr, int port) {
-	NetONEX::ISSLClientXPtr s = m_pMainX->CreateSSLClientXInstance();
-	s->_DEBUG_ = 1;
-	s->Method = _T("auto");
-	//s->Method = _T("cncav1.1");
-	cout << s->Method << endl;
-	s->TimeoutConnect = 15;
-	s->TimeoutWrite = 5;
-	s->TimeoutRead = 15;
-	SOCKET sock = clientSocket(addr, port);
-	s->ConnectSocket(sock);
-	if (s->Connected) {
-		NetONEX::ICertificateXPtr c = s->PeerCertificate;
-		cout << c->Subject << endl;
-		cout << c->Issuer << endl;
-		//_tcprintf(_T("%s\n"), s->CipherInfo);
-		cout << s->CipherInfo << endl;
-		s->WriteString(_T("GET / HTTP/1.0\r\n\r\n"));
-		s->LastError = 0;
-		while (true) {
-			_variant_t r = s->ReadBytes(4096);
-			if (s->LastError) {
-				MSGprintf(_T("SSL read failed. (%s)"), s->ErrorString);
-				break;
-			}
-			ULONG size;
-			BYTE* p = VAR2buffer(r, &size);
-			if (!p) {
-				if (s->LastError == 0) {
-					cout << "all data are read" << endl;
-					break;
-				}
-				else {
-					cout << s->ErrorString << endl;
-					break; //failed
-				}
-			}
-			cout << size << endl;
-			cout << p << endl;  // if p contains string, we can show it here
-			delete p;
-		}
-		s->Shutdown();
-	}
-	closesocket(sock);
-}
-
 void CTestNetONEX::Run() {
-	//SSLclient(_T("www.baidu.com"), 443);
-	SSLclient2(_T("192.168.161.161"), 9108);
+	CTestSSLClientX c;
+	c.SSLclient3(_T("www.baidu.com"), 443);
+	//c.SSLclient2(_T("192.168.161.161"), 9108);
 }
