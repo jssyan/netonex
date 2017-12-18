@@ -24,7 +24,8 @@ using namespace std;
 #pragma comment(lib, "Ws2_32.lib")
 
 // 这里请设置到NetONEX.dll的路径
-#import "h:/project/windows/x86/Release/NetONEX.dll" rename("DEBUG", "_DEBUG_")
+#import "h:/project/windows/x86/Debug/NetONEX.dll" rename("DEBUG", "_DEBUG_")
+//#import "h:/project/windows/x86/Release/NetONEX.dll" rename("DEBUG", "_DEBUG_")
 
 #define MSGprintf(str,...) do { \
 	ATL::CString __dbuf; \

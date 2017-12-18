@@ -162,6 +162,7 @@ void CTestNetONEX::Crt() {
 
 void CTestNetONEX::Run() {
 	CTestSSLClientX c;
-	c.SSLclient3(_T("www.baidu.com"), 443);
+	//c.SSLclient3(_T("www.baidu.com"), 443);
 	//c.SSLclient2(_T("192.168.161.161"), 9108);
+	c.SSLclient4(_T("192.168.161.161"), 4434);
 }

@@ -4,11 +4,16 @@
 
 CTestSSLClientX::CTestSSLClientX(void)
 {
+	m_hMutex = CreateMutex( 
+        NULL,              // default security attributes
+        FALSE,             // initially not owned
+        NULL);             // unnamed mutex
 }
 
 
 CTestSSLClientX::~CTestSSLClientX(void)
 {
+	CloseHandle(m_hMutex);
 }
 
 void CTestSSLClientX::SendRecv(CComPtr<NetONEX::ISSLClientX> s) {
@@ -46,10 +51,13 @@ void CTestSSLClientX::SendRecv(CComPtr<NetONEX::ISSLClientX> s) {
 
 void CTestSSLClientX::SSLclient(LPCTSTR addr, int port) {
 	CComPtr<NetONEX::ISSLClientX> s;
+	WaitForSingleObject(m_hMutex, INFINITE);
 	if (!SUCCEEDED(s.CoCreateInstance(__uuidof(NetONEX::SSLClientX)))) {
 		MSGprintf(_T("初始化实例失败！"));
+		ReleaseMutex(m_hMutex);
 		return;
 	}
+	ReleaseMutex(m_hMutex);
 	s->_DEBUG_ = 1;
 	s->Method = _T("auto");
 	//s->Method = _T("cncav1.1");
@@ -93,10 +101,13 @@ static SOCKET clientSocket(LPCTSTR ip, int port) {
 
 void CTestSSLClientX::SSLclient2(LPCTSTR addr, int port) {
 	CComPtr<NetONEX::ISSLClientX> s;
+	WaitForSingleObject(m_hMutex, INFINITE);
 	if (!SUCCEEDED(s.CoCreateInstance(__uuidof(NetONEX::SSLClientX)))) {
 		MSGprintf(_T("初始化实例失败！"));
+		ReleaseMutex(m_hMutex);
 		return;
 	}
+	ReleaseMutex(m_hMutex);
 	s->_DEBUG_ = 1;
 	s->Method = _T("auto");
 	//s->Method = _T("cncav1.1");
@@ -113,20 +124,33 @@ void CTestSSLClientX::SSLclient2(LPCTSTR addr, int port) {
 	closesocket(sock);
 }
 
+void CTestSSLClientX::SSLclient3Thread(CComPtr<NetONEX::ISSLClientX> s, LPCTSTR addr, int port) {
+	s->_DEBUG_ = 1;
+	s->Method = _T("auto");
+	//s->Method = _T("cncav1.1");
+	cout << s->Method << endl;
+	s->TimeoutConnect = 15;
+	s->TimeoutWrite = 5;
+	s->TimeoutRead = 15;
+	s->Connect(addr, port);
+	if (s->Connected) {
+		SendRecv(s);
+		s->Shutdown();
+	}
+}
+
 typedef struct st_thread_opt {
 	CTestSSLClientX* x;
 	LPCTSTR addr;
 	int port;
+	CComPtr<NetONEX::ISSLClientX> s;
 } THREAD_OPT;
 
 DWORD WINAPI Thread1(LPVOID pM) {
 	THREAD_OPT* opt = (THREAD_OPT*)pM;
-	HRESULT hr = CoInitialize(0);
-	if (SUCCEEDED(hr)) {
-		while (1) {
-			opt->x->SSLclient(opt->addr, opt->port);
-			Sleep(2000);
-		}
+	while (1) {
+		opt->x->SSLclient3Thread(opt->s, opt->addr, opt->port);
+		Sleep(2000);
 	}
 	return 0;
 }
@@ -136,10 +160,52 @@ void CTestSSLClientX::SSLclient3(LPCTSTR addr, int port) {
     HANDLE handle[THREAD_NUM];  
 	THREAD_OPT opt[THREAD_NUM];
     for (int i = 0; i < THREAD_NUM; i++)  {
+		if (!SUCCEEDED(opt[i].s.CoCreateInstance(__uuidof(NetONEX::SSLClientX)))) {
+			MSGprintf(_T("初始化实例失败！"));
+			return;
+		}
+
 		opt[i].x = this;
 		opt[i].addr = addr;
 		opt[i].port = port;
 		handle[i] = (HANDLE)CreateThread(NULL, 0, Thread1, &(opt[i]), 0, NULL); 
 	}
 	WaitForMultipleObjects(THREAD_NUM, handle, TRUE, INFINITE);
+}
+
+void CTestSSLClientX::SSLclient4(LPCTSTR addr, int port) {
+	CComPtr<NetONEX::ISSLClientX> s;
+	CComPtr<NetONEX::ICertificateCollectionX> col;
+	WaitForSingleObject(m_hMutex, INFINITE);
+	if (!SUCCEEDED(s.CoCreateInstance(__uuidof(NetONEX::SSLClientX)))) {
+		MSGprintf(_T("初始化ISSLClientX实例失败！"));
+		ReleaseMutex(m_hMutex);
+		return;
+	}
+	if (!SUCCEEDED(col.CoCreateInstance(__uuidof(NetONEX::CertificateCollectionX)))) {
+		MSGprintf(_T("初始化ICertificateCollectionX实例失败！"));
+		ReleaseMutex(m_hMutex);
+		return;
+	}
+	ReleaseMutex(m_hMutex);
+
+	col->CryptoInterface = 3; // 同时支持CSP和SKF
+	col->Load();
+	CComPtr<NetONEX::ICertificateX> c = col->SelectCertificateDialog();
+	if (!c) {
+		return;
+	}
+	s->_DEBUG_ = 1;
+	s->PreferredCertificate = c->ThumbprintSHA1;
+	s->Method = _T("auto");
+	//s->Method = _T("tlsv1.1");
+	//s->Method = _T("cncav1.1");
+	s->TimeoutConnect = 15;
+	s->TimeoutWrite = 5;
+	s->TimeoutRead = 15;
+	s->Connect(addr, port);
+	if (s->Connected) {
+		SendRecv(s);
+		s->Shutdown();
+	}
 }
