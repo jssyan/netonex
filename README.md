@@ -6,6 +6,12 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.4.8.8
+* SVSClientX, TSAClientX, PCSClientX新增ServerSSL属性，当ServerSSL=1的时候，上述控件将使用SSL方式连接服务器。
+* 由于经常出现key厂商新旧SKF驱动混用出现冲突，SKF_EnumDev可以枚举到设备，但是SKF_ConnectDev失败的现象，应客户需要，在遭遇打开SKF设备错误时，不再通过消息框发出提醒。
+* SSLClientX，如果服务端要求双向认证，而事先未设置PreferredCertificate，将自动出现证书选择对话框，供用户选择证书；
+* 由于PROV_RSA_FULL不支持SHA2，当使用来自PROV_RSA_FULL的CSP证书的时候，SSLClientX将不支持TLSv1.2。由于以上原因，建议Key厂商驱动在注册证书时，如果支持SHA2，请将证书注册为来自PROV_RSA_AES，这样在使用该证书的时候，SSLClientX将可以支持TLSv1.2
+
 ##### v1.4.8.5
 * SSLClientX新增ConnectSocket方法，使用方法参考vc范例中的SSLclient2()
 * SSLClientX修复了一个Shutdown后存在CLOSE_WAIT的bug
