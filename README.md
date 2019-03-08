@@ -6,6 +6,9 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.4.8.9
+* 修复了1个在Windows XP下运行时SVSClientX, TSAClientX, PCSClientX中的bug
+
 ##### v1.4.8.8
 * SVSClientX, TSAClientX, PCSClientX新增ServerSSL属性，当ServerSSL=1的时候，上述控件将使用SSL方式连接服务器。
 * 由于经常出现key厂商新旧SKF驱动混用出现冲突，SKF_EnumDev可以枚举到设备，但是SKF_ConnectDev失败的现象，应客户需要，在遭遇打开SKF设备错误时，不再通过消息框发出提醒。
