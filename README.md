@@ -6,6 +6,15 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.4.9.2
+* 提高XMLSigX对XML格式的容错度
+
+##### v1.4.9.1
+* 解决CertificateX.XMLSign对包含中文的XML签名失败的bug
+
+##### v1.4.9.0
+* 新增控件模块XMLSigX，用于XML验签
+
 ##### v1.4.8.9
 * 修复了1个在Windows XP下运行时SVSClientX, TSAClientX, PCSClientX中的bug
 
