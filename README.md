@@ -6,6 +6,20 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.5.0.1
+* 修复CertificateX.XMLSign和和CertificateX.XMLSignEnveloping中的内存泄漏
+* 修复CertificateX构造时的内存泄漏
+
+##### v1.5.0.0
+* 从v1.5.0.0开始, NetONEX不再支持Windows XP
+* 部分基础库升级
+* CertificateX.XMLSign和CertificateX.XMLSignEnveloping返回结果前先执行UTF8到Unicode的转换
+* XMLSigX.GetPredigestAt返回结果前先执行UTF8到Unicode的转换
+
+##### v1.4.9.3
+* XMLSigX新增PredigestCount属性和GetPredigestAt方法
+* CertificateX.XMLSign和CertificateX.XMLSignEnveloping输入的数据如果是字符串，将先进行Unicode到UTF8的转换再签名
+
 ##### v1.4.9.2
 * 提高XMLSigX对XML格式的容错度
 
