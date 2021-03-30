@@ -6,6 +6,9 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.5.0.2
+* 修复SKFGetDevInfo获取数据错误的问题, 增强对USB Key及驱动的兼容性
+
 ##### v1.5.0.1
 * 修复CertificateX.XMLSign和和CertificateX.XMLSignEnveloping中的内存泄漏
 * 修复CertificateX构造时的内存泄漏
