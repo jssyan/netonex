@@ -6,6 +6,24 @@ NetONEX/npNetONE 密码控件及示例
 
 ## 修改记录(Change Log)
 
+##### v1.5.0.5
+* 增强USB Key的兼容性
+
+##### v1.5.0.4
+ *	ICertificateCollectionX支持加载有口令保护的pfx(p12)文件证书，约定如下：
+    * 口令以文件方式保存，文件中仅仅包含口令本身，口令前后的空格将被自动忽略；
+    * 口令文件的命名为 文件证书名+".pin"。例如证书文件xs_a.pfx对应的口令文件名为xs_a.pfx.pin;
+    * 口令文件应和对应的pfx(p12)文件证书在同一个目录下；
+ * ICertificateCollectionX.SelectCertificateDialog()列表新增“CSP*"标志：
+    * 如果某个CSP证书属于PROV_RSA_AES，将显示为“CSP(A)”，表示该证书可以支持更多算法，例如SHA256、SHA512的签名；
+    * 否则显示“CSP”
+ 
+##### v1.5.0.3
+ * ICertificateCollectionX支持加载文件证书。文件证书需符合如下约定：
+  * 文件证书名称需包含xs_前缀，包含.pfx或.p12或.crt或.cer后缀，例如：xs_1.pfx
+  * 文件证书的位置在C:\\Users\\[用户名]\\AppData\\Roaming\\XSafe\\ 目录下
+  * 文件证书无口令保护
+
 ##### v1.5.0.2
 * 修复SKFGetDevInfo获取数据错误的问题, 增强对USB Key及驱动的兼容性
 
